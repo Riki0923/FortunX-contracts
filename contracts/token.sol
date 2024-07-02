@@ -775,9 +775,7 @@ contract FortunX is ERC20, ERC20Burnable, Ownable(msg.sender) {
     mapping(address => bool) public isExcludedFromFee; 
     uint256 public feeThresholdToCollectStakingRewards = 100 * 10**18;
 
-    constructor(address _stakingPool) ERC20("FortunX", "FNX") {
-        require(_stakingPool != address(0), "Staking pool address cannot be the zero address.");
-        stakingPool = _stakingPool;
+    constructor() ERC20("FortunX", "FNX") {
         _mint(msg.sender, 300000000 * 10**18); 
     }
 
@@ -785,15 +783,15 @@ contract FortunX is ERC20, ERC20Burnable, Ownable(msg.sender) {
         if (isBlacklisted[_msgSender()] || isBlacklisted[recipient]) {
             revert("Address is blacklisted");
         }
-
+        // 
         uint256 fee = calculateFee(amount);
-        uint256 amountAfterFee = amount - fee;
+        uint256 amountAfterFee = amount - fee; 
 
         if (fee > 0) {
-            super.transfer(stakingPool, fee);
+            super.transfer(address(this), fee); 
         }
         
-        return super.transfer(recipient, amountAfterFee);
+        return super.transfer(recipient, amountAfterFee); 
     }
 
     function transferFrom(address sender, address recipient, uint256 amount) public override returns (bool) {
@@ -837,5 +835,9 @@ contract FortunX is ERC20, ERC20Burnable, Ownable(msg.sender) {
     function updateStakingPool(address _newStakingPool) external onlyOwner {
         require(_newStakingPool != address(0), "New staking pool address cannot be the zero address.");
         stakingPool = _newStakingPool;
+    }
+
+    function getFeePercentage() public view returns (uint256){
+        return feePercentage;
     }
 }

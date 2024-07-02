@@ -7,6 +7,9 @@ import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 
 contract TokenVesting is ReentrancyGuard {
+
+    // Set this to ownable, as only admins can call these functions!
+
     using SafeERC20 for IERC20;
 
     uint256 internal constant ONE_MONTH_IN_SECONDS = 2592000;
