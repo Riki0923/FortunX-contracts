@@ -29,6 +29,7 @@ contract EnhancedTimeWeightedStaking is ReentrancyGuard, Ownable {
         uint256 id;
         address user;
         uint256 amount;
+        uint256 rewardAmount;
     }
 
     uint256 public rewardTokenAmount;
@@ -59,9 +60,11 @@ contract EnhancedTimeWeightedStaking is ReentrancyGuard, Ownable {
         stakes.push(Stake({
             id: nextId,
             user: msg.sender,
-            amount: newAmount
+            amount: newAmount,
+            rewardAmount: 0
         }));
 
+        hasUserStaked[msg.sender] = true;
         stakedBalance += newAmount;
         userStakedAmount[msg.sender] += newAmount;
         userStakeId[msg.sender] = nextId;
@@ -69,9 +72,11 @@ contract EnhancedTimeWeightedStaking is ReentrancyGuard, Ownable {
         } else {
             uint userId = userStakeId[msg.sender];
             stakes[userId].amount += newAmount;
+            stakedBalance += newAmount;
+            userStakedAmount[msg.sender] += newAmount;
         }
 
-        _fortunxToken.transferFrom(msg.sender, address(this), newAmount); 
+        _fortunxToken.transferFrom(msg.sender, address(this), amount); 
         emit Staked(msg.sender, amount, block.timestamp);
     }
 
@@ -84,13 +89,24 @@ contract EnhancedTimeWeightedStaking is ReentrancyGuard, Ownable {
 
         for(uint i = 0; i < stakes.length; i++){
             if(stakes[i].amount > 0){
-                _fortunxToken.transfer(stakes[i].user, rewardTokenAmount * stakes[i].amount / stakedBalance);
+                stakes[i].rewardAmount+=(rewardTokenAmount * stakes[i].amount / stakedBalance);
             }
         }
 
         rewardTokenAmount = 0;
 
         // emit RewardClaimed(msg.sender, reward); => This will require more gas, do we need it?
+    }
+
+    function claimReward() public returns (bool){
+        uint256 id = userStakeId[msg.sender];
+        require(hasUserStaked[msg.sender] == true, "you haven't staked any tokens yet");
+        require(stakes[id].user == msg.sender, "You are not a staker");
+
+        _fortunxToken.transfer(msg.sender, stakes[id].rewardAmount);
+        stakes[id].rewardAmount = 0;
+
+        return true;
     }
 
     function unstake(uint256 amount) external nonReentrant {
