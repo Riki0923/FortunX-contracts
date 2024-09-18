@@ -18,8 +18,8 @@ async function main() {
   const StakingContract = await ethers.deployContract("EnhancedTimeWeightedStaking", [fortunX, deployer]);
   const stakingContract = await StakingContract.waitForDeployment();
 
-  console.log("FortunX contract deployed at: ", fortunX)
-  console.log("stakingContract deployed at: ", stakingContract)
+  console.log("FortunX contract deployed at: ", fortunX.target)
+  console.log("stakingContract deployed at: ", stakingContract.target)
 
 }
 

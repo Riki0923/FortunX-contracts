@@ -116,16 +116,16 @@ contract EnhancedTimeWeightedStaking is ReentrancyGuard, Ownable {
         require(userStakedAmount[msg.sender] > amount, "You have staked less that you want to unstake");
         require(stakes[userId].user == msg.sender, "Stake does not belong to you");
 
-        uint256 fee = _fortunxToken.getFeePercentage();
-        uint256 excludedAmount = amount * fee / 100; // 1% amount
-        uint256 newAmount = amount - excludedAmount; // amount - fee
+        // uint256 fee = _fortunxToken.getFeePercentage();
+        // uint256 excludedAmount = amount * fee / 100; // 1% amount
+        // uint256 newAmount = amount - excludedAmount; // amount - fee
 
         stakedBalance -= amount;
         stakes[userId].amount -= amount;
         userStakedAmount[msg.sender] -= amount;
-        _fortunxToken.transfer(msg.sender, newAmount);
+        _fortunxToken.transfer(msg.sender, amount);
 
-        emit Withdrawn(msg.sender, newAmount);
+        emit Withdrawn(msg.sender, amount);
     }
 
 
