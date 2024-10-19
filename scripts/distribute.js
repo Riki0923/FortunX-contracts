@@ -68,6 +68,11 @@ async function main() {
    console.log("Reward token Amount remained: ", rewardTokenAmount);
    const stakes = await stakingContract.getStakes();
    console.log("Stakes are: ", stakes);
+
+   const user1RewardAmount = await stakingContract.getUserRewardAmount(account1);
+   console.log("User 1 reward Amount is: ", user1RewardAmount);
+   const user2RewardAmount = await stakingContract.getUserRewardAmount(account2);
+   console.log("User 2 Reward Amount is: ", user2RewardAmount);
 }
 
 main().catch((error) => {

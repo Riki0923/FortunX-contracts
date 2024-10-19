@@ -39,6 +39,7 @@ contract EnhancedTimeWeightedStaking is ReentrancyGuard, Ownable {
     mapping(address => uint256) public userStakedAmount;
     mapping(address => uint256) public userStakeId;
     mapping(address => bool) public hasUserStaked;
+    mapping(address => uint256) public userRewardAmount;
 
     event Staked(address indexed user, uint256 amount, uint256 lastRewardTime);
     event Withdrawn(address indexed user, uint256 amount);
@@ -90,6 +91,8 @@ contract EnhancedTimeWeightedStaking is ReentrancyGuard, Ownable {
         for(uint i = 0; i < stakes.length; i++){
             if(stakes[i].amount > 0){
                 stakes[i].rewardAmount+=(rewardTokenAmount * stakes[i].amount / stakedBalance);
+                address currentAddress = stakes[i].user;
+                userRewardAmount[currentAddress] = stakes[i].rewardAmount;
             }
         }
 
@@ -147,6 +150,10 @@ contract EnhancedTimeWeightedStaking is ReentrancyGuard, Ownable {
 
     function getRewardTokenAmount() public view returns (uint256){
         return rewardTokenAmount;
+    }
+
+    function getUserRewardAmount(address _user) public view returns(uint256){
+        return userRewardAmount[_user];
     }
 
     // for test
