@@ -103,12 +103,13 @@ contract EnhancedTimeWeightedStaking is ReentrancyGuard, Ownable {
 
     function claimReward() public returns (bool){
         uint256 id = userStakeId[msg.sender];
-        require(hasUserStaked[msg.sender] == true, "you haven't staked any tokens yet");
+        require(hasUserStaked[msg.sender] == true, "you haven't staked any tokens");
         require(stakes[id].user == msg.sender, "You are not a staker");
+        require(stakes[id].rewardAmount > 0, "You do not have any reward Tokens to claim");
 
         _fortunxToken.transfer(msg.sender, stakes[id].rewardAmount);
         stakes[id].rewardAmount = 0;
-
+        userRewardAmount[msg.sender] = 0;
         return true;
     }
 
